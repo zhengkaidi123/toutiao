@@ -1,14 +1,24 @@
 package swjtu.zkd.toutiao.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class User {
 
     private int id;
 
     private String name;
+
+    private String password;
+
+    private String salt;
+
+    private String headUrl;
+
+    public User() {}
+
+    public User(String name) {
+        this.name = name;
+    }
 
 }
