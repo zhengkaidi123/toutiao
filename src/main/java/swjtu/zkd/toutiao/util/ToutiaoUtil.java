@@ -11,6 +11,9 @@ import java.util.Map;
 public class ToutiaoUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ToutiaoUtil.class);
+    public static final String[] IMAGE_FILE_EXT = {"png", "jpg", "jpeg", "bmp"};
+    public static final String IMAGE_DIR = "D:\\toutiao\\upload";
+    public static final String TOUTIAO_DOMAIN = "http://127.0.0.1:8888";
 
     public static String MD5(String key) {
         char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -52,5 +55,14 @@ public class ToutiaoUtil {
         json.put("code", code);
         json.putAll(map);
         return json.toJSONString();
+    }
+
+    public static boolean isFileAllowed(String fileExt) {
+        for (String ext : IMAGE_FILE_EXT) {
+            if (ext.equals(fileExt)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

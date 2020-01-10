@@ -10,7 +10,7 @@
         FROM
         <include refid="table"/>
 
-        <if test="#{userId}!=0">WHERE user_id = #{userId}</if>
+        <if test="userId != 0">WHERE user_id = #{userId}</if>
         ORDER BY id LIMIT #{offset},#{limit}
     </select>
 </mapper>
