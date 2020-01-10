@@ -4,20 +4,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import swjtu.zkd.toutiao.model.HostHolder;
-import swjtu.zkd.toutiao.model.News;
+import swjtu.zkd.toutiao.model.*;
 import swjtu.zkd.toutiao.service.AliService;
+import swjtu.zkd.toutiao.service.CommentService;
 import swjtu.zkd.toutiao.service.NewsService;
+import swjtu.zkd.toutiao.service.UserService;
 import swjtu.zkd.toutiao.util.ToutiaoUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class NewsController {
@@ -32,6 +36,12 @@ public class NewsController {
 
     @Autowired
     private HostHolder hostHolder;
+
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/user/addNews")
     @ResponseBody
@@ -54,6 +64,49 @@ public class NewsController {
             LOGGER.error("添加咨询失败", e);
             return ToutiaoUtil.getJSONString(1, "发布失败");
         }
+    }
+
+    @GetMapping("/news/{newsId}")
+    public String newsDetail(@PathVariable("newsId") int newsId, Model model) {
+        try {
+            News news = newsService.getById(newsId);
+            if (news != null) {
+                List<Comment> comments = commentService.getCommentByEntity(newsId, EntityType.ENTITY_NEWS);
+                List<ViewObject> commentVOs = new ArrayList<>(comments.size());
+                for (Comment comment : comments) {
+                    ViewObject commentVO = new ViewObject();
+                    commentVO.set("comment", comment);
+                    commentVO.set("user", userService.getUser(comment.getUserId()));
+                    commentVOs.add(commentVO);
+                }
+                model.addAttribute("comments", commentVOs);
+            }
+            model.addAttribute("news", news);
+            model.addAttribute("owner", userService.getUser(news.getUserId()));
+        } catch (Exception e) {
+            LOGGER.error("获取咨询明细错误", e);
+        }
+        return "detail";
+    }
+
+    @PostMapping("/addComment")
+    public String addComment(@RequestParam("newsId") int newsId, @RequestParam("content") String content) {
+        try {
+            Comment comment = new Comment();
+            comment.setUserId(hostHolder.getUser().getId());
+            comment.setContent(content);
+            comment.setEntityId(newsId);
+            comment.setEntityType(EntityType.ENTITY_NEWS);
+            comment.setCreatedDate(new Date());
+            comment.setStatus(0);
+            commentService.addComment(comment);
+
+            int count = commentService.getCommentCount(newsId, EntityType.ENTITY_NEWS);
+            newsService.updateCommentCount(newsId, count);
+        } catch (Exception e) {
+            LOGGER.error("提交评论错误", e);
+        }
+        return "redirect:/" + newsId;
     }
 
     @PostMapping("/uploadImage")
