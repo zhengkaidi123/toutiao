@@ -6,8 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import swjtu.zkd.toutiao.dao.CommentDAO;
+import swjtu.zkd.toutiao.dao.LoginTicketDAO;
 import swjtu.zkd.toutiao.dao.NewsDAO;
 import swjtu.zkd.toutiao.dao.UserDAO;
+import swjtu.zkd.toutiao.model.EntityType;
+import swjtu.zkd.toutiao.model.LoginTicket;
 import swjtu.zkd.toutiao.model.News;
 import swjtu.zkd.toutiao.model.User;
 
@@ -23,6 +27,12 @@ class ToutiaoApplicationTests {
 
     @Autowired
     private NewsDAO newsDAO;
+
+    @Autowired
+    private LoginTicketDAO loginTicketDAO;
+
+    @Autowired
+    private CommentDAO commentDAO;
 
 //    @Test
 //    void contextLoads() {
@@ -52,10 +62,23 @@ class ToutiaoApplicationTests {
 
             user.setPassword("newpassword");
             userDAO.updatePassword(user);
+
+            LoginTicket ticket = new LoginTicket();
+            ticket.setStatus(0);
+            ticket.setUserId(i+1);
+            ticket.setExpired(date);
+            ticket.setTicket(String.format("TICKET%d", i+1));
+            loginTicketDAO.addTicket(ticket);
+
+            loginTicketDAO.updateStatus(ticket.getTicket(), 2);
         }
 //        Assertions.assertEquals("newpassword", userDAO.selectById(1).getPassword());
         userDAO.deleteById(1);
         Assertions.assertNull(userDAO.selectById(1));
+
+        Assertions.assertEquals(1, loginTicketDAO.selectByTicket("TICKET1").getUserId());
+        Assertions.assertEquals(0, loginTicketDAO.selectByTicket("TICKET1").getStatus());
+        Assertions.assertNotNull(commentDAO.selectByEntity(1, EntityType.ENTITY_NEWS));
     }
 
 }

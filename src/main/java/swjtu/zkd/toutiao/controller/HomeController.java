@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import swjtu.zkd.toutiao.model.EntityType;
+import swjtu.zkd.toutiao.model.HostHolder;
 import swjtu.zkd.toutiao.model.News;
 import swjtu.zkd.toutiao.model.ViewObject;
+import swjtu.zkd.toutiao.service.LikeService;
 import swjtu.zkd.toutiao.service.NewsService;
 import swjtu.zkd.toutiao.service.UserService;
 
@@ -24,13 +27,23 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private HostHolder hostHolder;
+
+    @Autowired
+    private LikeService likeService;
+
     private List<ViewObject> getNews(int userId, int offset, int limit) {
         List<News> newsList = newsService.getLatestNews(userId, offset, limit);
         List<ViewObject> vos = new ArrayList<>(newsList.size());
+        int localUserId = hostHolder.getUser() != null ? hostHolder.getUser().getId() : 0;
         for (News news : newsList) {
             ViewObject vo = new ViewObject();
             vo.set("news", news);
             vo.set("user", userService.getUser(news.getUserId()));
+            if (localUserId != 0) {
+                vo.set("like", likeService.getLikeStatus(localUserId, EntityType.ENTITY_NEWS, news.getId()));
+            }
             vos.add(vo);
         }
         return vos;

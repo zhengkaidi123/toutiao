@@ -9,10 +9,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import swjtu.zkd.toutiao.model.*;
-import swjtu.zkd.toutiao.service.AliService;
-import swjtu.zkd.toutiao.service.CommentService;
-import swjtu.zkd.toutiao.service.NewsService;
-import swjtu.zkd.toutiao.service.UserService;
+import swjtu.zkd.toutiao.service.*;
 import swjtu.zkd.toutiao.util.ToutiaoUtil;
 
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +40,9 @@ public class NewsController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private LikeService likeService;
+
     @PostMapping("/user/addNews")
     @ResponseBody
     public String addNews(@RequestParam("image") String image, @RequestParam("title") String title,
@@ -71,6 +71,12 @@ public class NewsController {
         try {
             News news = newsService.getById(newsId);
             if (news != null) {
+                int localUserId = hostHolder.getUser() != null ? hostHolder.getUser().getId() : 0;
+                if (localUserId != 0) {
+                    model.addAttribute("like", likeService.getLikeStatus(localUserId, EntityType.ENTITY_NEWS, newsId));
+                } else {
+                    model.addAttribute("like", 0);
+                }
                 List<Comment> comments = commentService.getCommentByEntity(newsId, EntityType.ENTITY_NEWS);
                 List<ViewObject> commentVOs = new ArrayList<>(comments.size());
                 for (Comment comment : comments) {
