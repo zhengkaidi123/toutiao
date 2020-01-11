@@ -1,6 +1,5 @@
 package swjtu.zkd.toutiao;
 
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ import java.util.Date;
 import java.util.Random;
 
 @Sql("classpath:init-schema.sql")
-@SpringBootTest
+@SpringBootTest(classes = ToutiaoApplication.class)
 class ToutiaoApplicationTests {
 
     @Autowired

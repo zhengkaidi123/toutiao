@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import swjtu.zkd.toutiao.model.EntityType;
 import swjtu.zkd.toutiao.model.HostHolder;
-import swjtu.zkd.toutiao.model.News;
 import swjtu.zkd.toutiao.service.LikeService;
 import swjtu.zkd.toutiao.service.NewsService;
 import swjtu.zkd.toutiao.util.ToutiaoUtil;

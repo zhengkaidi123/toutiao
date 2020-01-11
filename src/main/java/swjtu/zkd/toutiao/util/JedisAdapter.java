@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.BinaryClient;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -12,21 +12,21 @@ import redis.clients.jedis.Tuple;
 
 import java.util.List;
 
-@Service
+@Component
 public class JedisAdapter implements InitializingBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JedisAdapter.class);
 
     private JedisPool jedisPool;
 
-    private Jedis jedis;
+//    private Jedis jedis;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         jedisPool = new JedisPool("localhost", 6379);
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         Jedis jedis = new Jedis("localhost", 6379);
         jedis.flushAll();
         jedis.set("hello", "world");
@@ -105,7 +105,7 @@ public class JedisAdapter implements InitializingBean {
         System.out.println(jedis.zrange(setKey, 0, 10));
 
         jedis.close();
-    }
+    }*/
 
     private Jedis getJedis() {
         return jedisPool.getResource();

@@ -3,7 +3,6 @@ package swjtu.zkd.toutiao.service;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.security.krb5.internal.Ticket;
 import swjtu.zkd.toutiao.dao.LoginTicketDAO;
 import swjtu.zkd.toutiao.dao.UserDAO;
 import swjtu.zkd.toutiao.model.LoginTicket;
